@@ -1,0 +1,42 @@
+
+.lista-container {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    background-color: #f1f1f1;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.estudiante-card {
+    background-color: #ffffff;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #2e312e;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+.estudiante-card:hover {
+    transform: translateY(-5px);
+}
+
+.estudiante-card h2 {
+    margin-bottom: 10px;
+    font-size: medium;
+    color: #333;
+}
+
+.estudiante-card p {
+    margin: 5px 0;
+    font-size: smaller;
+    color: #666;
+}
+
+.lista{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+
+}
