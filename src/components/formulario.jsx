@@ -1,80 +1,140 @@
-import { useState } from "react";
-import "./formulario.css";
-import { Lista } from "./lista";
+import React, { useEffect, useState } from 'react';
+import Error from './Error';
+import '../styles/formulario.css';
 
-export const Formulario = () => {
+const Formulario = ({setEstudiantes, estudiantes, estudiante, setEstudiante}) => {
+  const [documento, setDocumento] = useState("");
+  const [nombre, setNombre] = useState("");
+  const [apellido, setApellido] = useState("");
+  const [telefono, setTelefono] = useState("");
+  const [correo, setCorreo] = useState("");
+  const [error, setError] = useState(false);
 
-    const [estudiantes, setEstudiantes] = useState([]);
-    const [estudiante, setEstudiante] = useState({
-        INE: "",
-        nombre: "",
-        apellido: "",
-        telefono: "",
-        correo: ""
-    });
+  const enviarFormulario = (e) => {
+    e.preventDefault();
 
-    const onChange = (e) => {
-        setEstudiante({
-            ...estudiante,
-            [e.target.name]: e.target.value
-        });
-    };
-    const onSubmit = (e) => {
-        e.preventDefault();
-        if (!estudiante.INE || !estudiante.nombre || !estudiante.apellido || !estudiante.telefono || !estudiante.correo) {
-            alert("Por favor, rellene todos los campos");
-            return
-        }
-        setEstudiantes([...estudiantes, estudiante]);
+    if([documento, nombre, apellido, telefono, correo].includes("")){
+      setError(true);
+      return;
+    }else{
+      setError(false);
+    }
 
-        reset();
-    };
+    const obj = {documento, nombre, apellido, telefono, correo};
+    if(estudiante.id){
+      obj.id = estudiante.id;
+      const otros = estudiantes.map(est => est.id === estudiante.id ? obj : est);
+      setEstudiantes(otros);
+    }else{
+      obj.id = getId();
+      setEstudiantes([...estudiantes, obj]);
+    }
 
-    const reset = () => {
-        setEstudiante({
-            INE: "",
-            nombre: "",
-            apellido: "",
-            telefono: "",
-            correo: ""
-        });
-    };
+    limpiarCampos();
+  }
+
+  const getId = () => {
+    let id = (Math.random().toString(36).substr(2) + Math.random().toString(36).substring(2) + Date.now().toString(36));
+    return id;
+  }
+
+  const limpiarCampos = () => {
+    setDocumento("");
+    setNombre("");
+    setApellido("");
+    setTelefono("");
+    setCorreo("");
+    setEstudiante({});
+  }
+
+  useEffect(() => {
+    if(estudiante.id && estudiante.id !== ""){
+      setDocumento(estudiante.documento);
+      setNombre(estudiante.nombre);
+      setApellido(estudiante.apellido);
+      setTelefono(estudiante.telefono);
+      setCorreo(estudiante.correo);
+    }
+  }, [estudiante]);
 
     return (
-        <div className="container">
-            <div>
-                <form onSubmit={onSubmit}>
-                    <h1>Formulario de Estudiantes</h1>
-                    <label>
-                        Número de INE:
-                        <input type="text" name="INE" value={estudiante.INE} onChange={onChange} />
-                    </label>
-                    <label>
-                        Nombre:
-                        <input type="text" name="nombre" value={estudiante.nombre} onChange={onChange} />
-                    </label>
-                    <label>
-                        Apellido Paterno:
-                        <input type="text" name="apellido" value={estudiante.apellido} onChange={onChange} />
-                    </label>
-                    <label>
-                        Teléfono:
-                        <input type="text" name="telefono" value={estudiante.telefono} onChange={onChange} />
-                    </label>
-                    <label>
-                        Correo:
-                        <input type="text" name="correo" value={estudiante.correo} onChange={onChange} />
-                    </label>
-
-
-                    <button type="submit">Enviar</button>
-                    <button type="reset" onClick={reset}>Limpiar</button>
-                </form>
+      <div className='col-md-5 mt-2'>
+        <form onSubmit={enviarFormulario}>
+          <div className='card'>
+            <div className='card-header'>Formulario</div>
+            { error && <Error otra="mas props" mensaje="Los campos son obligatorios"/> }
+            <div className='card-body'>
+              <div className='input-group mb-3'>
+                <span className='input-group-text' id='basic-addon1'>
+                  Documento:
+                </span>
+                <input
+                  type='number'
+                  className='form-control'
+                  value={documento}
+                  onChange={(e) => setDocumento(e.target.value)}
+                />
+              </div>
+              <div className='input-group mb-3'>
+                <span className='input-group-text' id='basic-addon1'>
+                  Nombre:
+                </span>
+                <input
+                  type='text'
+                  className='form-control'
+                  value={nombre}
+                  onChange={(e) => setNombre(e.target.value)}
+                />
+              </div>
+              <div className='input-group mb-3'>
+                <span className='input-group-text' id='basic-addon1'>
+                  Apellido:
+                </span>
+                <input
+                  type='text'
+                  className='form-control'
+                  value={apellido}
+                  onChange={(e) => setApellido(e.target.value)}
+                />
+              </div>
+              <div className='input-group mb-3'>
+                <span className='input-group-text' id='basic-addon1'>
+                  Teléfono:
+                </span>
+                <input
+                  type='number'
+                  className='form-control'
+                  value={telefono}
+                  onChange={(e) => setTelefono(e.target.value)}
+                />
+              </div>
+              <div className='input-group mb-3'>
+                <span className='input-group-text' id='basic-addon1'>
+                  Correo:
+                </span>
+                <input
+                  type='email'
+                  className='form-control'
+                  value={correo}
+                  onChange={(e) => setCorreo(e.target.value)}
+                />
+              </div>
+              <div className='d-grid'>
+                <button type='submit' className='btn btn-success'>
+                  {estudiante.id ? "Editar" : "Registrar"}
+                </button>
+                <input 
+                  type='button' 
+                  className='btn btn-info my-2' 
+                  value='Cancelar' 
+                  onClick={limpiarCampos}
+                />
+              </div>
             </div>
-
-            <div>
-                <Lista estudiantes={estudiantes} />
-            </div>
-        </div>
-    )
-}
+          </div>
+        </form>
+      </div>
+    );
+  }
+  
+  export default Formulario;
